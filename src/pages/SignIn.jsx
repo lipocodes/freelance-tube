@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {useState,useEffect} from 'react';
 import styled, { ThemeProvider } from "styled-components";
 //import {Link} from 'react-router-dom';
+import axios from 'axios';
 
 const Container = styled.div`
 display:flex;
@@ -56,19 +57,35 @@ margin-left:30px;
 `;
 
 const SignIn = () => {
+
+const [name,setName] = useState("");
+const [email,setEmail] = useState("");
+const [password,setPassword] = useState("");
+
+const handleLogin = async(e)=>{
+ e.preventDefault();
+ try{
+   const res = await axios.post("/auth/signin",{
+    name:name,
+    password:password
+   });
+   console.log("aaaaaaaaaaaa=" + res.data.email);
+ }catch(err){}
+}
+
   return (
     <Container>
       <Wrapper>
         <Title>Sign In</Title>
         <SubTitle>To Continue to Freelancetube</SubTitle>
         
-        <Input placeholder="Username"/>
-        <Input type="password" placeholder="Password"/>
-        <Button>Sign In</Button>
+        <Input placeholder="Username" onChange={e=>setName(e.target.value)}/>
+        <Input type="password" placeholder="Password" onChange={e=>setPassword(e.target.value)}/>
+        <Button onClick={handleLogin}>Sign In</Button>
         <Title>Or</Title>
-        <Input placeholder="Username"/>
-        <Input placeholder="Email"/>
-        <Input type="password" placeholder="Password"/>
+        <Input placeholder="Username" onChange={e=>setName(e.target.value)}/>
+        <Input placeholder="Email" onChange={e=>setEmail(e.target.value)}/>
+        <Input type="password" placeholder="Password" onChange={e=>setPassword(e.target.value)}/>
         <Button>Sign Up</Button>
       </Wrapper>
       <More>
