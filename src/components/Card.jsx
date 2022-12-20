@@ -61,8 +61,7 @@ useEffect(() => {
   const fetchChannel = async () => {
     try{
     const res = await axios.get(`/users/find/${video.userId}`);
-    console.log("xxxxxxxxxxxx=" + res._id);
-    setChannel(res.data);
+    setChannel(res.data[0]);
     }catch(err) {console.log("eeeeeeeeeeeeee=" + err);}
    
   };
