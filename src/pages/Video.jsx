@@ -1,5 +1,6 @@
-import React from 'react'
+import React, {useEffect,useState} from 'react'
 import styled from "styled-components";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbUpOutlinedIcon from "@mui/icons-material/ThumbUpOutlined";
 import ThumbDownOffAltOutlinedIcon from "@mui/icons-material/ThumbDownOffAltOutlined";
 import ReplyOutlinedIcon from "@mui/icons-material/ReplyOutlined";
@@ -7,6 +8,11 @@ import AddTaskOutlinedIcon from "@mui/icons-material/AddTaskOutlined";
 import Comments from '../components/Comments';
 import Card from '../components/Card';
 import { useDispatch,useSelector } from "react-redux";
+import { useFetcher, useLocation } from "react-router-dom";
+import axios from "axios";
+import { fetchFailure, fetchStart, fetchSuccess,like,dislike} from "../redux/videoSlice";
+import {subscription}   from "../redux/userSlice";
+import {format} from "timeago.js";
 
 
 const Container = styled.div`
@@ -109,32 +115,71 @@ const HR = styled.hr`
  margin: 15px 0;
 `;
 
+const VideoFrame = styled.video`
+  max-height: 720px;
+  width: 100%;
+  object-fit: cover;
+`;
+
 const Video = () => {
  const {currentUser} = useSelector((state)=>state.user);
+ const {currentVideo} = useSelector((state)=>state.video);
  const dispatch = useDispatch();
+
+ //extract the video ID
+ const path = useLocation().pathname.split("/")[2];
+ const [channel,setChannel] = useState({});
+
+ useEffect(()=>{
+  
+  const fetchData = async()=>{ 
+    try{
+     const videoRes = await axios.get("/videos/find/" + path);
+     const channelRes = await axios.get("/users/find/" + videoRes.data.userId); 
+     setChannel(channelRes.data[0]);
+
+     dispatch(fetchSuccess(videoRes.data));
+    }catch(err){}
+  }
+  fetchData();
+ },[path,dispatch]);
+
+ 
+ const handleLike = async () => {
+  await axios.put(`/users/like/${currentVideo._id}`);
+  dispatch(like(currentUser._id));
+};
+const handleDislike = async () => {
+  await axios.put(`/users/dislike/${currentVideo._id}`);
+  dispatch(dislike(currentUser._id));
+};
+
+const handleSub = async()=>{
+  currentUser.subscribedUsers.includes(channel._id)
+      ? await axios.put(`/users/unsub/${channel._id}`)
+      : await axios.put(`/users/sub/${channel._id}`);
+  dispatch(subscription(channel._id));    
+}
+
+
 
   return (
     <Container>
       <Content>
         <VideoWrapper>
-          <iframe
-            width="100%"
-            height="720"
-            src="https://www.youtube.com/embed/k3Vfj-e1Ma4"
-            title="YouTube video player"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-          ></iframe>
+          <VideoFrame src={currentVideo.videoUrl} controls />
         </VideoWrapper>
-        <Title>Test Video</Title>
+        <Title>{currentVideo.title}</Title>
         <Details>
           <Info>
-            2,000,000 views * December 12 2020
+            {currentVideo.views} views * {format(currentVideo.createdAt)}
           </Info>
           <Buttons>
-            <Button><ThumbUpOutlinedIcon/>123</Button>
-            <Button><ThumbDownOffAltOutlinedIcon/>Dislike</Button>
+            <Button onClick={handleLike}>
+             <ThumbUpOutlinedIcon/>
+              {currentVideo.likes?currentVideo.likes.length:0}
+            </Button>
+            <Button onClick={handleDislike}><ThumbDownOffAltOutlinedIcon/>Dislike</Button>
             <Button><ReplyOutlinedIcon /> Share</Button>
             <Button><AddTaskOutlinedIcon /> Save </Button>
           </Buttons>
@@ -142,28 +187,20 @@ const Video = () => {
         <HR/>
         <Channel>
           <ChannelInfo>
-            <Image src="https://yt3.ggpht.com/yti/APfAmoE-Q0ZLJ4vk3vqmV4Kwp0sbrjxLyB8Q4ZgNsiRH=s88-c-k-c0x00ffffff-no-rj-mo" />
+            <Image src={channel.img} />
             <ChannelDetail>
-              <ChannelName>Freelancertube</ChannelName>
-              <ChannelCounter>200k subscribers</ChannelCounter>
-              <Description>Channel for tutoring freelancers</Description>
+              <ChannelName>{channel.name}</ChannelName>
+              <ChannelCounter>{channel.subscribers} subscribers</ChannelCounter>
+              <Description>{currentVideo.Description}</Description>
             </ChannelDetail>
           </ChannelInfo>
-          <Subscribe>
-            Subscribe
+          <Subscribe onClick={handleSub}>
+            {currentUser.subscribedUsers?.includes(channel._id)?"SUBSCRIBED":"SUBSCRIBE"}
           </Subscribe> 
         </Channel>
         <HR/>
-        <Comments/>
+        <Comments videoId={currentVideo._id}/>
       </Content>
-
-      <Recommendation>
-         <Card type="sm"/>
-         <Card type="sm"/>
-         <Card type="sm"/>
-         <Card type="sm"/>
-         <Card type="sm"/>
-      </Recommendation>
 
     </Container>
   )

@@ -26,7 +26,7 @@ export const userSlice = createSlice({
       state.loading = false;
       state.error = false;
     },
-    subscription: (state, action) => {
+    subscription: (state, action) => { console.log("xxxxxxxxxxxxxx");
       if (state.currentUser.subscribedUsers.includes(action.payload)) {
         state.currentUser.subscribedUsers.splice(
           state.currentUser.subscribedUsers.findIndex(

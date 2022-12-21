@@ -1,5 +1,7 @@
-import React from 'react'
+import React, {useState,useEffect} from 'react'
 import styled from "styled-components";
+import axios from "axios";
+
 const Container = styled.div`
  display:flex;
  gap:10px;
@@ -34,14 +36,23 @@ margin-left:5px;
 const Text = styled.div`font-size:14px;color:${({theme})=>theme.text};`;
 
 
-const Comment = () => {
+const Comment = (comment) => {
+  const [channel,setChannel] = useState("");
+  
+  useEffect(async()=>{
+    const fetchComment = async()=>{
+      const res = await axios.get("/users/find/"+ comment.userId); 
+      setChannel(res.data);
+    }
+    fetchComment();
+  },[comment.userId]);
+
   return (
     <Container>
-      <Avatar src="https://yt3.ggpht.com/yti/APfAmoE-Q0ZLJ4vk3vqmV4Kwp0sbrjxLyB8Q4ZgNsiRH=s88-c-k-c0x00ffffff-no-rj-mo"/>
+      <Avatar src={channel.img}/>
       <Details>
-        <Name>Lior Polak <Date>1 day ago</Date> </Name>
-        
-        <Text>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a gall</Text>
+        <Name>{channel.name} <Date>1 day ago</Date> </Name>
+        <Text>{comment.desc}</Text>
       </Details>
     
     </Container>
