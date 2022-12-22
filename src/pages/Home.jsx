@@ -13,7 +13,9 @@ const Home = ({type}) => {
 
   useEffect(() => {
     const fetchVideos = async () => {
-      const res = await axios.get(`https://freelancetube-api.onrender.com/api/videos/${type}`);
+      const rr =  await axios.get("https://freelancetube-api.onrender.com/api/users/find/lior751");
+      
+      const res = await axios.get(`/videos/${type}`);
       setVideos(res.data);
     };
     fetchVideos();
@@ -23,6 +25,7 @@ const Home = ({type}) => {
     <Container>
       {videos.map((video) => (
         <Card key={video._id} video={video}/>
+    {rr.data}
       ))}
     </Container>
   );
