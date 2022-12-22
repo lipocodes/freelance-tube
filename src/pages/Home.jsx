@@ -23,13 +23,16 @@ const Home = ({type}) => {
   }, [type]);
 
   return (
+    <>
+    {rr.data}
     <Container>
-     {rr.data}
+     
       {videos.map((video) => (
         <Card key={video._id} video={video}/>
    
       ))}
     </Container>
+    </>
   );
 };
 
