@@ -23,9 +23,10 @@ const Home = ({type}) => {
 
   return (
     <Container>
+     {rr.data}
       {videos.map((video) => (
         <Card key={video._id} video={video}/>
-    {rr.data}
+   
       ))}
     </Container>
   );
