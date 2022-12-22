@@ -24,7 +24,7 @@ const Home = ({type}) => {
 
   return (
     <>
-    {rr.data}
+    {rr}
     <Container>
      
       {videos.map((video) => (
