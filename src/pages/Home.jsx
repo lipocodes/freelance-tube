@@ -7,7 +7,7 @@ const Container = styled.div`
   justify-content: space-between;
   flex-wrap: wrap;
 `;
-let rr;
+
 
 const Home = ({type}) => {
   const [videos, setVideos] = useState([]);
@@ -16,7 +16,7 @@ const Home = ({type}) => {
   useEffect(() => {
     const fetchVideos = async () => {
     
-      rr = await axios.get("https://freelancetube-api.onrender.com/api/users/find/lior751");
+     
       const res = await axios.get(`/videos/${type}`);
       setVideos(res.data);
     };
@@ -24,8 +24,8 @@ const Home = ({type}) => {
   }, [type]);
 
   return (
-    <>
-    {rr}
+  
+   
     <Container>
      
       {videos.map((video) => (
@@ -33,7 +33,7 @@ const Home = ({type}) => {
    
       ))}
     </Container>
-   </>
+
   );
 };
 
