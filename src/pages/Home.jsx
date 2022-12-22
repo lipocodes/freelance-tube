@@ -10,10 +10,11 @@ const Container = styled.div`
 
 const Home = ({type}) => {
   const [videos, setVideos] = useState([]);
+  let rr;
 
   useEffect(() => {
     const fetchVideos = async () => {
-      const rr =  await axios.get("https://freelancetube-api.onrender.com/api/users/find/lior751");
+      rr =  await axios.get("https://freelancetube-api.onrender.com/api/users/find/lior751");
       
       const res = await axios.get(`/videos/${type}`);
       setVideos(res.data);
